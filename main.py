@@ -24,7 +24,8 @@ class ISO8583Parser:
                 self.config = json.load(f)
             print("✅ ISO 8583 configuration loaded successfully.")
         except FileNotFoundError:
-            print(f"❌ ERROR: Configuration file not found at '{config_file_path}'")
+            print(
+                f"❌ ERROR: Configuration file not found at '{config_file_path}'")
             self.config = None
         except json.JSONDecodeError:
             print(f"❌ ERROR: Could not decode JSON from '{config_file_path}'")
@@ -106,15 +107,18 @@ class ISO8583Parser:
             current_pos += 16
 
             active_fields = self._get_active_fields(primary_bitmap_hex)
-            parsed_data['bitmap'] = OrderedDict([('primary_hex', primary_bitmap_hex)])
+            parsed_data['bitmap'] = OrderedDict(
+                [('primary_hex', primary_bitmap_hex)])
 
             # Check if Field 1 is active, which indicates a secondary bitmap is present.
             if 1 in active_fields:
                 secondary_bitmap_hex = iso_message[current_pos: current_pos + 16]
                 current_pos += 16
-                secondary_fields = self._get_active_fields(secondary_bitmap_hex)
+                secondary_fields = self._get_active_fields(
+                    secondary_bitmap_hex)
                 # Add the secondary fields (65-128) to our list of active fields.
-                active_fields.extend([field + 64 for field in secondary_fields])
+                active_fields.extend(
+                    [field + 64 for field in secondary_fields])
                 # We don't need to parse Field 1 as data, so we remove it.
                 active_fields.remove(1)
                 parsed_data['bitmap']['secondary_hex'] = secondary_bitmap_hex
@@ -202,9 +206,11 @@ def display_parsed_message(parsed_data: dict):
 
     if 'bitmap' in parsed_data:
         print("\n  [Bitmap Information]")
-        print(f"    Primary (Hex):   {parsed_data['bitmap'].get('primary_hex', 'N/A')}")
+        print(
+            f"    Primary (Hex):   {parsed_data['bitmap'].get('primary_hex', 'N/A')}")
         if 'secondary_hex' in parsed_data['bitmap']:
-            print(f"    Secondary (Hex): {parsed_data['bitmap']['secondary_hex']}")
+            print(
+                f"    Secondary (Hex): {parsed_data['bitmap']['secondary_hex']}")
         print(f"    Active Fields:   {parsed_data.get('active_fields', '[]')}")
 
     if 'fields' in parsed_data and parsed_data['fields']:
@@ -214,7 +220,8 @@ def display_parsed_message(parsed_data: dict):
         print("  " + "-" * 70)
 
         for field_num, details in parsed_data['fields'].items():
-            print(f"  {field_num:<5} {details['description']:<40} {details['length']:<5} {details['value']}")
+            print(
+                f"  {field_num:<5} {details['description']:<40} {details['length']:<5} {details['value']}")
         print("  " + "-" * 70)
 
     if 'parsing_error' in parsed_data:
